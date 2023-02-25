@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-
-# Deletion-resilient hypermedia pagination 
+"""
+Deletion-resilient hypermedia pagination
+"""
 
 import csv
 import math
@@ -13,7 +14,6 @@ class Server:
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
-        ''' Initialize instance. '''
         self.__dataset = None
         self.__indexed_dataset = None
 
@@ -40,30 +40,18 @@ class Server:
         return self.__indexed_dataset
 
     def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
-        ''' Return dict of pagination data.
-            Dict key/value pairs consist of the following:
-              index - the start index of the page
-              next_index - the start index of the next page
-              page_size
-              page_size - the number of items on the page
-              data - the data in the page itself '''
-        assert 0 <= index < len(self.dataset())
-
-        indexed_dataset = self.indexed_dataset()
-        indexed_page = {}
-
-        i = index
-        while (len(indexed_page) < page_size and i < len(self.dataset())):
-            if i in indexed_dataset:
-                indexed_page[i] = indexed_dataset[i]
-            i += 1
-
-        page = list(indexed_page.values())
-        page_indices = indexed_page.keys()
-
-        return {
-            'index': index,
-            'next_index': max(page_indices) + 1,
-            'page_size': len(page),
-            'data': page
-        }
+        """ return a dictionary """
+        assert type(index) == int and type(page_size) == int
+        assert 0 <= index < len(self.indexed_dataset())
+        pages = []
+        next_index = index + page_size
+        for i in range(index, index + page_size):
+            if not self.indexed_dataset().get(i):
+                i += 1
+                next_index += 1
+            pages.append(self.indexed_dataset()[i])
+        return {'index': index,
+                'next_index': next_index,
+                'page_size': page_size,
+                'data': pages
+                }
