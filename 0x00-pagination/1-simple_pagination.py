@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-# Function take two interger arguements with default value 1 and 10
-
+""" Simple pagination """
 import csv
 import math
 from typing import List
+
 
 def index_range(page, page_size):
     """ return a tuple of size two containing a start index and an end index
@@ -21,7 +21,6 @@ class Server:
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
-        ''' Initialize instance. '''
         self.__dataset = None
 
     def dataset(self) -> List[List]:
@@ -36,15 +35,12 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        ''' Return page of dataset. '''
-        assert isinstance(page, int) and isinstance(page_size, int)
-        assert page > 0 and page_size > 0
-
-        indices = index_range(page, page_size)
-        start = indices[0]
-        end = indices[1]
-
-        try:
-            return self.dataset()[start:end]
-        except IndexError:
-            return []
+        """ obtains the indexes and return corresponding pages """
+        assert type(page) == int and page > 0
+        assert type(page_size) == int and page_size > 0
+        start, end = index_range(page, page_size)
+        pages = []
+        if start >= len(self.dataset()):
+            return pages
+        pages = self.dataset()
+        return pages[start:end]
